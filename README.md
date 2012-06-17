@@ -25,11 +25,12 @@ Key points:
 Operating principles
 ============
 
-Each resource in the network has a unique 64 bit identifier. When a client wants to retrieve that resource it sends a "subscribe" 
-packet to each server it knows. If that resource is found on server, the server starts to stream packets to client. After a certain 
-amount of time the server stops streaming to that client (UDP is used as protocol so there is no way to know is the client is still receiving).
-In order to receive packets the client sends periodically the "subscribe" packet to each server. When the client is able to reconstruct the resource
-it sends a "unsubscribe" packet to each server and the servers stop to stream packets to client.
+1. Each resource in the network has a unique 64 bit identifier. 
+2. When a client wants to retrieve that resource it sends a "subscribe" packet to each server it knows. 
+3. If that resource is found on server, the server starts to stream packets to client. 
+4. After a certain amount of time the server stops streaming to that client (UDP is used as protocol so there is no way to know is the client is still receiving).
+5. In order to receive packets the client sends periodically the "subscribe" packet to each server. 
+6. When the client is able to reconstruct the resource it sends a "unsubscribe" packet to each server and the servers stop to stream packets to client.
 
 
 
