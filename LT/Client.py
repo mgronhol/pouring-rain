@@ -62,6 +62,12 @@ class LTClient( object ):
 	def server( self, host, port ):
 		self.servers.append( (host, port ) )
 	
+	def broadcast( self, command, resource_id, data ):
+		out = struct.pack( "<QQ", command, resource_id )
+		out += data
+		for addr in self.servers:
+			self.sock.sendto( out, addr )
+	
 	def subscribe( self, resource_id ):
 		for addr in self.servers:
 			self.sock.sendto( msg_subscribe( resource_id ), addr )
