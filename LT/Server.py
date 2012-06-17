@@ -47,6 +47,10 @@ import json
 
 import time
 
+SUBSCRIBE = 1
+UNSUBSCRIBE = 2
+
+
 
 class OutboundStreamer( threading.Thread ):
 	def __init__( self, streams, locks, timeouts, generators ):
@@ -85,33 +89,40 @@ class RequestHandler( SocketServer.BaseRequestHandler ):
 		data = self.request[0]
 		sock = self.request[0]
 		addr = self.client_address
-		(command, resid ) = struct.unpack_from( "<QQ", data )
+		header = "<QQ"
+		hlen = struct.calcsize( header )
+		(command, resid ) = struct.unpack_from( header, data )
 	
-		if resid not in self.server.streams:
-			return
+		if command in [SUBSCRIBE, UNSUBSCRIBE]:
+			if resid not in self.server.streams:
+				return
 
-		with self.server.locks[resid]:
-			if command == 1:
-				#print "Subscribe", resid, addr
-				self.server.streams[resid].add( addr )
-				self.server.timeouts[(addr, resid)] = time.time()
-			else:
-				#print "Unsubscribe", resid, addr
-				self.server.streams[resid].discard( addr )
-				key = (addr, resid)
-				if key in self.server.timeouts:
-					del self.server.timeouts[key]
+			with self.server.locks[resid]:
+				if command == SUBSCRIBE:
+					#print "Subscribe", resid, addr
+					self.server.streams[resid].add( addr )
+					self.server.timeouts[(addr, resid)] = time.time()
+				else:
+					#print "Unsubscribe", resid, addr
+					self.server.streams[resid].discard( addr )
+					key = (addr, resid)
+					if key in self.server.timeouts:
+						del self.server.timeouts[key]
+		else:
+			if command in self.server.handlers:
+				self.servers.handlers[command]( command, resid, addr, data[hlen:] )
 
 
 
 class ThreadingUDPServer( SocketServer.ThreadingMixIn, SocketServer.UDPServer ):
 		daemon_threads = True
 		
-		def __init__( self, address, handler_class, streams, locks, timeouts ):
+		def __init__( self, address, handler_class, streams, locks, timeouts, handlers ):
 			SocketServer.UDPServer.__init__( self, address, handler_class )
 			self.streams = streams
 			self.locks = locks
 			self.timeouts = timeouts
+			self.handlers = handlers
 		
 
 class PacketGenerator( object ):
@@ -131,8 +142,16 @@ class LTServer( object ):
 		self.locks = {}
 		self.timeouts = {}
 		self.generators = {}
+		self.handlers = {}
 		self.outbound = OutboundStreamer( self.streams, self.locks, self.timeouts, self.generators )
-		self.server = ThreadingUDPServer( ("", port), RequestHandler, self.streams, self.locks, self.timeouts )
+		self.server = ThreadingUDPServer( ("", port), RequestHandler, self.streams, self.locks, self.timeouts, self.handlers )
+	
+	def register( self, command, handler ):
+		self.handlers[command] = handler
+	
+	def unregister( self, command ):
+		if command in self.handler:
+			del self.handlers[ command ]
 	
 	def start( self ):
 		self.outbound.start()

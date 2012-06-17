@@ -40,12 +40,14 @@ import sys
 import time
 import json
 
+SUBSCRIBE = 1
+UNSUBSCRIBE = 2
 
 def msg_subscribe( resid ):
-	return struct.pack( "<QQ", 1, resid )
+	return struct.pack( "<QQ", SUBSCRIBE, resid )
 
 def msg_unsubscribe( resid ):
-	return struct.pack( "<QQ", 2, resid )
+	return struct.pack( "<QQ", UNSUBSCRIBE, resid )
 
 
 class LTClient( object ):
