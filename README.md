@@ -7,8 +7,9 @@ Pouring Rain is a framework for distributed data transfer over unreliable networ
 Introduction
 ============
 
-Problem: How to transfer data over (unreliable) network as fast as possible?
-Solution: Use distributed stateless transfer mechanism with error correction.
+**Problem:** How to transfer data over (unreliable) network as fast as possible?
+
+**Solution:** Use distributed stateless transfer mechanism with error correction.
 
 Key points:
 
