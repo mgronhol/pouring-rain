@@ -3,6 +3,7 @@ Pouring Rain
 
 Pouring Rain is a framework for distributed data transfer over unreliable network using Luby Transform codes.
 
+See `test-client.py` and `test-server.py` for usage.
 
 Introduction
 ============
@@ -17,11 +18,13 @@ Key points:
 	* This means that T(5) = 0.25 (**four** times faster than from a single server!)
 * M packets ( M is slighty larger than N ) needs to be received in order to construct the original message (composes of N packets).
 * Total independece of transfer:
-	* All packets are independent of each other so they don't have to come from the same machine	
-	* No ordering of packets is required
+	* All packets are independent of each other so they don't have to come from the same machine.	
+	* No ordering of packets is required.
 	* Tolerates packet loss and unavailability of source machines
-	* Only requirement is to receive enough unique packets to construct the original file
-* Runs on UDP so no TCP overhead on the transfer
+	* Only requirement is to receive enough unique packets to construct the original file.
+	* Can be started, stopped and restarted arbitrarily. Servers doesn't need to know what you have received so far.
+* Runs on UDP so no TCP overhead on the transfer.
+* Server load (also disk io) is indepedent of how many clients it serves. 
 
 
 Operating principles
