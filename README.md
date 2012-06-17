@@ -13,7 +13,7 @@ Introduction
 
 Key points:
 
-* Transfer time T(K) = 1.3/K where K = number of servers
+* Transfer time T(K) = 1.25/K where K = number of servers. This means that T(5) = 0.25 (four times faster than from a single server!)
 * M packets ( M is slighty larger than N ) needs to be received in order to construct the original message (composes of N packets).
 * Total independece of transfer:
 	* All packets are independent of each other so they don't have to come from the same machine	
