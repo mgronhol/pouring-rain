@@ -53,7 +53,7 @@ def msg_unsubscribe( resid ):
 class LTClient( object ):
 	def __init__( self, Npackets = 64, timeout = 4.0 ):
 		self.servers = []
-		self.store = Luby.ChunkStore()
+		self.store = {}
 		self.sock = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
 		self.Npackets = Npackets
 		self.timeout = timeout
@@ -81,18 +81,20 @@ class LTClient( object ):
 		response = None
 		last_t = time.time()
 		self.subscribe( resource_id )
+		self.store[resource_id] = Luby.ChunkStore()
 		while not done:
 			result = select.select( [self.sock], [], [], self.fail_timeout )
 			if result[0]:
 				data, addr = self.sock.recvfrom( 1024 * 1024 )
 				response = Luby.decodeChunk( data )
-				self.store.insert( response['chunk'] )
+				if response['resourceId'] in self.store:
+					self.store[ response['resourceId'] ].insert( response['chunk'] )
 				
 				if time.time() - last_t > self.timeout:
 					self.subscribe( resource_id )
 					last_t = time.time()
 				
-				if len( self.store.solved.keys() ) == self.Npackets:
+				if len( self.store[resource_id].solved.keys() ) == self.Npackets:
 					done = True
 			else:
 				self.unsubscribe( resource_id )
@@ -100,6 +102,6 @@ class LTClient( object ):
 		self.unsubscribe( resource_id )
 		
 		L = response['dataLen']
-		return self.store.summon()[:L]
+		return self.store[resource_id].summon()[:L]
 		
 

@@ -81,7 +81,7 @@ class OutboundStreamer( threading.Thread ):
 								to_be_removed.append( key )
 						for client in to_be_removed:
 							del self.timeouts[key]
-							self.streams[ entry[1] ].discard( entry[0] )
+							self.streams[ client[1] ].discard( client[0] )
 
 
 class RequestHandler( SocketServer.BaseRequestHandler ):
@@ -99,10 +99,12 @@ class RequestHandler( SocketServer.BaseRequestHandler ):
 
 			with self.server.locks[resid]:
 				if command == SUBSCRIBE:
+					#print ""
 					#print "Subscribe", resid, addr
 					self.server.streams[resid].add( addr )
 					self.server.timeouts[(addr, resid)] = time.time()
 				else:
+					#print ""
 					#print "Unsubscribe", resid, addr
 					self.server.streams[resid].discard( addr )
 					key = (addr, resid)
