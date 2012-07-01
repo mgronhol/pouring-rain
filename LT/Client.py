@@ -52,7 +52,7 @@ def msg_unsubscribe( resid ):
 
 class LTClient( object ):
 	def __init__( self, Npackets = 64, timeout = 4.0 ):
-		self.servers = []
+		self.servers = set()
 		self.store = {}
 		self.sock = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
 		self.Npackets = Npackets
@@ -60,7 +60,7 @@ class LTClient( object ):
 		self.fail_timeout = 1.0
 	
 	def server( self, host, port ):
-		self.servers.append( (host, port ) )
+		self.servers.add( (host, port ) )
 	
 	def broadcast( self, command, resource_id, data ):
 		out = struct.pack( "<QQ", command, resource_id )

@@ -112,7 +112,7 @@ class RequestHandler( SocketServer.BaseRequestHandler ):
 						del self.server.timeouts[key]
 		else:
 			if command in self.server.handlers:
-				self.servers.handlers[command]( command, resid, addr, data[hlen:] )
+				self.server.handlers[command]( command, resid, addr, data[hlen:] )
 
 
 
