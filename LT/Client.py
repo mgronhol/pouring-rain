@@ -76,19 +76,32 @@ class LTClient( object ):
 		for addr in self.servers:
 			self.sock.sendto( msg_unsubscribe( resource_id ), addr )
 	
+	def clear( self, resource_id ):
+		if resource_id in self.store:
+			del self.store[ resource_id ]
+	
 	def fetch( self, resource_id ):
 		done = False
 		response = None
 		last_t = time.time()
 		self.subscribe( resource_id )
-		self.store[resource_id] = Luby.ChunkStore()
+		#self.store[resource_id] = Luby.ChunkStore()
+		if resource_id not in self.store:
+			self.store[resource_id] = Luby.ChunkStore()
+		
 		while not done:
+			if len( self.store[resource_id].solved.keys() ) == self.Npackets:
+				done = True
+				continue
+			
+			
 			result = select.select( [self.sock], [], [], self.fail_timeout )
 			if result[0]:
 				data, addr = self.sock.recvfrom( 1024 * 1024 )
 				response = Luby.decodeChunk( data )
 				if response['resourceId'] in self.store:
 					self.store[ response['resourceId'] ].insert( response['chunk'] )
+					self.store[ response['resourceId'] ].set_length( response['dataLen'] )
 				
 				if time.time() - last_t > self.timeout:
 					self.subscribe( resource_id )
@@ -101,7 +114,7 @@ class LTClient( object ):
 				return None
 		self.unsubscribe( resource_id )
 		
-		L = response['dataLen']
-		return self.store[resource_id].summon()[:L]
+		#L = response['dataLen']
+		return self.store[resource_id].summon()
 		
 

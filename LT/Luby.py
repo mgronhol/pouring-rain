@@ -55,6 +55,10 @@ class ChunkStore( object ):
 	def __init__( self ):
 		self.queue = {}
 		self.solved = {}
+		self.length = 0
+	
+	def set_length( self, length ):
+		self.length = length
 	
 	def insert( self, rchunk ):
 		chunk = copy.deepcopy( rchunk )
@@ -116,7 +120,7 @@ class ChunkStore( object ):
 		out = ""
 		for key in keys:
 			out += self.solved[key].value
-		return out
+		return out[:self.length]
 
 
 class ChunkGenerator( object ):

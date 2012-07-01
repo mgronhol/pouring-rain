@@ -11,4 +11,7 @@ client.server( "127.0.0.1", 1980 )
 client.server( "127.0.0.1", 1981 )
 
 print client.fetch( 1000 )
+print client.fetch( 1000 )
+client.clear( 1000 )
+print client.fetch( 1000 )
 
