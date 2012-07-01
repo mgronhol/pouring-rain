@@ -51,3 +51,10 @@ Future
 ============
 
 * C / C++ implementation for more performance and smaller footprint
+
+
+Murky Waters
+============
+
+Murky Waters is a distributed data store implemented using Pouring Rain. It adds "propagate" feature to Pouring Rain, which is used to replicate data over a 
+PR cluster. It also caches locally all entries it fetches from the cluster. 
