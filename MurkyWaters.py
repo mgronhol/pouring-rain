@@ -24,7 +24,8 @@ class MurkyWaters( object ):
 	
 	def fetch( self, resource_id ):
 		data = self._client.fetch( resource_id )
-		self.add( resource_id, data )
+		if data:
+			self.add( resource_id, data )
 		return data
 		
 	
