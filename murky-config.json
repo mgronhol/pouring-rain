@@ -1,0 +1,22 @@
+{
+	"http":{
+		"host": "",
+		"port": 8080
+		},
+	
+	"pouring-rain":{
+		"port": 1980
+		},
+		
+	"data-dir": "./data/",
+	
+	"servers-list": "./servers.json",
+	
+	"behaviour": {
+		"propagate-on-startup": false,
+		"auto-add-peers": true,
+		"share-content": true
+		}
+
+
+}

@@ -9,11 +9,16 @@ PROPAGATE = 3
 
 
 class MurkyWaters( object ):
-	def __init__( self, port = 1980 ):
-		self.port = port
-		self._server = LT.Server.LTServer( port )
+	def __init__( self, storage_handler = None, config = None ):
+		if config:
+			self.port = config['pouring-rain']['port']
+		else:
+			self.port = 1980
+		
+		self._server = LT.Server.LTServer( self.port )
 		self._client = LT.Client.LTClient()
-	
+		self.config = config
+		self.storage_handler = storage_handler
 		self._server.register( PROPAGATE, self._handle_propagate )
 	
 	def server( self, host, port ):
@@ -25,7 +30,8 @@ class MurkyWaters( object ):
 	def fetch( self, resource_id ):
 		data = self._client.fetch( resource_id )
 		if data:
-			self.add( resource_id, data )
+			if self.config and self.config['behaviour']['share-content']:
+				self.add( resource_id, data )
 		return data
 		
 	
@@ -43,10 +49,17 @@ class MurkyWaters( object ):
 		if command != PROPAGATE:
 			return
 		port = struct.unpack_from( "<Q", data )[0]
+		#print "Propagate (resid = %i) from"%resid, addr, "to port", port
+		if self.config and self.config['behaviour']['auto-add-peers']:
+			#print "Adding peer to cloud"
+			self._client.server( addr[0], port )
 		
-		self._client.server( addr[0], port )
+		#print "Fetching entry from cloud"
 		entry = self._client.fetch( resid )
+		#print "Fetched %i bytes"%len( entry )
 		self.add( resid, entry )
+		if self.storage_handler:
+			self.storage_handler( self.config, resid, entry )
 		
 		
 			
